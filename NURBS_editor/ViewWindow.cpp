@@ -61,6 +61,7 @@ void ViewWindow::StaticRender()
 
 void ViewWindow::Render()
 {
+   glutSetWindow(windowID);
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glLoadIdentity();
    glClearColor(0, 0, 0, 0);
@@ -77,13 +78,19 @@ void ViewWindow::MouseClick(int button, int state, int x, int y)
    {
       self.mouseX = x;
       self.mouseY = y;
-
-      if (button == GLUT_RIGHT_BUTTON)
+      switch (button)
       {
+      case GLUT_RIGHT_BUTTON:
+         if (glutGetModifiers() == GLUT_ACTIVE_SHIFT)
+         {
+            self.mouseAct = MouseAction::PAN;
+         }
+         else
+         {
          self.mouseAct = MouseAction::ROTATE;
-      }
-      if (button == GLUT_LEFT_BUTTON)
-      {
+         }
+         break;
+      case GLUT_LEFT_BUTTON:
          if (glutGetModifiers() == GLUT_ACTIVE_SHIFT)
          {
             self.mouseAct = MouseAction::MOVE;
@@ -92,9 +99,10 @@ void ViewWindow::MouseClick(int button, int state, int x, int y)
          {
             self.scene->SelectOnRay(self.activeCamera->ClickRay(x, y), 0.04f);
          }
+         break;
       }
    }
-   else
+   else //on mouse release
    {
       if (self.mouseAct == MouseAction::MOVE)
          self.scene->Recalculate();
@@ -104,10 +112,17 @@ void ViewWindow::MouseClick(int button, int state, int x, int y)
 void ViewWindow::MouseMove(int x, int y)
 {
    ViewWindow& self = *static_cast<ViewWindow*>(glutGetWindowData());
-   if (self.mouseAct == MouseAction::ROTATE)
+   switch (self.mouseAct)
+   {
+   case ROTATE:
       self.activeCamera->Rotate(x - self.mouseX, y - self.mouseY);
-   else if (self.mouseAct == MouseAction::MOVE)
+      break;
+   case MOVE:
       self.scene->MoveSelected(self.activeCamera->InPlaneMovement(x - self.mouseX, y - self.mouseY));
+      break;
+   case PAN:
+      self.activeCamera->Pan(x - self.mouseX, t - self.mouseY);
+   }
    self.mouseX = x;
    self.mouseY = y;
 }

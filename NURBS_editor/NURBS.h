@@ -41,15 +41,23 @@ public:
    //cutoff = max distance from ray
    void SelectOnRay(Ray ray, float cutoff);
    //moves currently selected point by displacement
-   void MoveSelected(glm::vec3 displacement);
+   void MoveSelected(const glm::vec3& displacement);
 
+   //returns position of selected control point
    glm::vec3 GetSelectedPos() const;
+   //sets position of selected control point to pos
+   void SetSelectedPos(const glm::vec3& pos);
+   //returns weight of selected control point
    float GetSelectedWeight() const { return controlWeights[selectedPoint]; }
+   //sets weight of selected control point to w
    void SetSelectedWeight(float w) { controlWeights[selectedPoint] = w; }
 
    void SetSize(int uPoints, int vPoints, float width, float height);
 
-   //makes all knots uniform with weights of 1
+   //resets all control point weights to 1
+   void ResetWeights();
+
+   //makes all knots uniform with separations of 1
    void MakeKnotsUniform();
    //rebuils control mesh from control points
    void ReloadControlMesh();
@@ -82,6 +90,13 @@ NURBS<D>::NURBS(int uPoints, int vPoints)
 : resolution(10), selectedPoint(0)
 {
    SetSize(uPoints, vPoints, 1.0, 1.0);
+}
+
+
+template<int D>
+void NURBS<D>::ResetWeights()
+{
+   controlWeights.assign(controlWeights.size(), 1.0f);
 }
 
 
@@ -300,9 +315,9 @@ void NURBS<D>::RecalculateSurface()
                float weightedB = Bi * Bj * controlWeights[pIJ];
                //adjust index for array of XYZ vectors
                pIJ *= 3;
-               surfaceVerts[vIndex] += control[pIJ] * Bi * Bj;
-               surfaceVerts[vIndex + 1] += control[pIJ + 1] * Bi * Bj;
-               surfaceVerts[vIndex + 2] += control[pIJ + 2] * Bi * Bj;
+               surfaceVerts[vIndex] += control[pIJ] * weightedB;
+               surfaceVerts[vIndex + 1] += control[pIJ + 1] * weightedB;
+               surfaceVerts[vIndex + 2] += control[pIJ + 2] * weightedB;
                totalWeight += weightedB;
             }
          }
@@ -365,7 +380,7 @@ void NURBS<D>::SelectOnRay(Ray ray, float cutoff)
 
 
 template <int D>
-void NURBS<D>::MoveSelected(glm::vec3 displacement)
+void NURBS<D>::MoveSelected(const glm::vec3& displacement)
 {
    //some cameras may always emit null vectors. Why waste time recalulating?
    if (displacement == glm::vec3(0, 0, 0))
@@ -373,4 +388,19 @@ void NURBS<D>::MoveSelected(glm::vec3 displacement)
    control[3 * selectedPoint] += displacement.x;
    control[3 * selectedPoint + 1] += displacement.y;
    control[3 * selectedPoint + 2] += displacement.z;
+};
+
+template <int D>
+void NURBS<D>::SetSelectedPos(const glm::vec3& pos)
+{
+   control[3 * selectedPoint] = pos.x;
+   control[3 * selectedPoint + 1] = pos.y;
+   control[3 * selectedPoint + 2] = pos.z;
+}
+
+template <int D>
+glm::vec3 NURBS<D>::GetSelectedPos() const
+{
+   return glm::vec3(control[3 * selectedPoint],
+      control[3 * selectedPoint + 1], control[3 * selectedPoint + 2]);
 }

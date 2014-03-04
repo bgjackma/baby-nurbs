@@ -84,22 +84,22 @@ void OrthoCamera::Activate()
    glLoadIdentity();
    float distance = 10;
    glOrtho(-aspect * height / 2, aspect * height / 2, -height / 2, height / 2, -100, 100);
-   if (d == Z)
+   switch (d)
    {
-      glTranslated(0, 0, distance);
-      SetPosition(glm::vec3(0, 0, distance));
-   }
-   if (d == Y)
-   {
-      glRotated(90, 1, 0, 0);
-      glTranslated(0, distance, 0);
-      SetPosition(glm::vec3(0, distance, 0));
-   }
-   if (d == X)
-   {
+   case X:
       glRotated(90, 0, 1, 0);
       glTranslated(distance, 0, 0);
       SetPosition(glm::vec3(distance, 0, 0));
+      break;
+   case Y:
+      glRotated(90, 1, 0, 0);
+      glTranslated(0, distance, 0);
+      SetPosition(glm::vec3(0, distance, 0));
+      break;
+   case Z:
+      glTranslated(0, 0, distance);
+      SetPosition(glm::vec3(0, 0, distance));
+      break;
    }
    glMatrixMode(GL_MODELVIEW);
 }
@@ -126,26 +126,27 @@ Ray OrthoCamera::ClickRay(int mouseX, int mouseY) const
    //ortho matrices are weird, just gonna hack this
    vec3 origin(0,0,0);
    vec3 direction(0, 0, 0);
-   if (d == Direction::X)
+   switch (d)
    {
+   case Direction::X:
       direction.x = -1;
       origin.x = GetX();
       origin.y = viewCoords.y;
       origin.z = viewCoords.x;
-   }
-   else if (d == Direction::Y)
-   {
+      break;
+   case Direction::Y:
       direction.y = -1;
       origin.x = viewCoords.x;
       origin.y = GetY();
       origin.z = viewCoords.y;
-   }
-   else
-   {
+      break;
+   case Direction::Z:
       origin.x = viewCoords.x;
       origin.y = viewCoords.y;
       origin.z = GetZ();
       direction.z = -1;
+      break;
+   default:
    }
    return Ray(origin, direction);
 }
@@ -159,11 +160,16 @@ glm::vec3 OrthoCamera::InPlaneMovement(int dx, int dy) const
    float winHeight = (float)glutGet(GLUT_WINDOW_HEIGHT);
    float deltaX = (dx / winWidth) * height * aspect;
    float deltaY = (-dy / winHeight) * height;
-   if (d == Direction::X)
+   switch (d)
+   {
+   case Direction::X:
       return vec3(0, deltaY, deltaX);
-   else if (d == Direction::Y)
-      return vec3(deltaX, 0, deltaY);
-   else
+   case Direction::Y:
+      return vec3(deltaX, 0, -deltaY);
+   case Direction::Z:
       return vec3(deltaX, deltaY, 0);
+   default:
+      return vec3(0, 0, 0);
+   }
 
 }

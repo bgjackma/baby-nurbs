@@ -34,8 +34,13 @@ public:
    PerspectiveCamera(int window, double theta, double phi, double r, 
       double fov);
    void Activate();
+   //rotates the camera
    void Rotate(int dx, int dy);
+   //pans the camera
+   void Pan(int dx, int dy);
    void ReloadPosition();
+   //returns a ray projected from the camera through the point (X,Y) in the
+   //projection plane
    Ray ClickRay(int mouseX, int mouseY) const;
    virtual glm::vec3 InPlaneMovement(int dx, int dy) const;
 

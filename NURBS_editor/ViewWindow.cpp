@@ -19,8 +19,8 @@ ViewWindow::ViewWindow(int mainWindow, int x, int y, int width, int height)
    GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
    GLfloat mat_shininess[] = { 50.0 };
    GLfloat light_position[] = { 1.0, 1.0, -1.0, 0.0 };
-   glClearColor (0.0, 0.0, 0.0, 0.0);
-   glShadeModel (GL_SMOOTH);
+   glClearColor(0.0, 0.0, 0.0, 0.0);
+   glShadeModel(GL_SMOOTH);
    glEnable(GL_LIGHTING);
 
    //glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
@@ -53,7 +53,7 @@ ViewWindow::ViewWindow(int mainWindow)
 }
 
 
-void ViewWindow::StaticRender() 
+void ViewWindow::StaticRender()
 {
    ViewWindow& self = *static_cast<ViewWindow*>(glutGetWindowData());
    self.Render();
@@ -87,7 +87,7 @@ void ViewWindow::MouseClick(int button, int state, int x, int y)
          }
          else
          {
-         self.mouseAct = MouseAction::ROTATE;
+            self.mouseAct = MouseAction::ROTATE;
          }
          break;
       case GLUT_LEFT_BUTTON:
@@ -120,8 +120,6 @@ void ViewWindow::MouseMove(int x, int y)
    case MOVE:
       self.scene->MoveSelected(self.activeCamera->InPlaneMovement(x - self.mouseX, y - self.mouseY));
       break;
-   case PAN:
-      self.activeCamera->Pan(x - self.mouseX, t - self.mouseY);
    }
    self.mouseX = x;
    self.mouseY = y;

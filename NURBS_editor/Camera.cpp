@@ -69,6 +69,8 @@ void PerspectiveCamera::ReloadPosition()
 glm::vec3 PerspectiveCamera::InPlaneMovement(int, int) const
 { return glm::vec3(0, 0, 0); }
 
+
+
 OrthoCamera::OrthoCamera(int window, double h, Direction direct)
 : Camera(window), height(h), d(direct)
 {
@@ -103,6 +105,7 @@ void OrthoCamera::Activate()
    }
    glMatrixMode(GL_MODELVIEW);
 }
+
 
 void OrthoCamera::Rotate(int dx, int dy)
 {

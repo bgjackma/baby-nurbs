@@ -116,7 +116,6 @@ void NURBS<D>::SetSize(int uPoints, int vPoints, float width, float height)
          control[3 * (i * vPoints + j) + 2] = 0;
       }
    }
-   control[41] = 0.4f;
    uSegs = (uPoints - D + 1) * resolution + 1;
    vSegs = (vPoints - D + 1) * resolution + 1;
    

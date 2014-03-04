@@ -150,6 +150,7 @@ Ray OrthoCamera::ClickRay(int mouseX, int mouseY) const
       direction.z = -1;
       break;
    default:
+      break;
    }
    return Ray(origin, direction);
 }
